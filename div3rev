@@ -1,0 +1,68 @@
+def op1(b):
+    for i in range(len(b)):
+        b[i] += 8*(((b[i] % 10)*b[i]+75) & 1)
+    return b
+
+def deop1(b):
+    for i in range(len(b)):
+        if b[i]%2 == 0: #Check if b[i] is even
+            b[i] -= 8
+    return b
+
+
+def op2(b):
+    for i in range(len(b)):
+        for j in range(100):
+            b[i] = b[i] ^ 69
+        b[i] += 12
+    return b
+
+def deop2(b):
+    for i in range(len(b)):
+        for j in range(100):
+            b[i] = b[i] ^ 69
+        b[i] -= 12
+    return b
+
+
+def op3(b):
+    for i in range(len(b)):
+        b[i] = ((b[i] % 2) << 7)  +(b[i]//2)
+    return b
+
+def deop3(b):
+    for i in range(len(b)):
+        if b[i]<= 128:
+            b[i] = b[i] * 2
+        else:
+            b[i] -= 128
+            b[i]= b[i]*2 + 1
+    return b
+
+def recur(b):
+    print(b)
+    if len(b) == 1:
+        return b
+    assert len(b) % 3 == 0
+    a = len(b)
+    return eop1(recur(b[0:a//3]))+eop2(recur(b[a//3:2*a//3]))+eop3(recur(b[2*a//3:]))
+
+def derecur(b):
+    if len(b) == 1:
+        return b
+    assert len(b) % 3 == 0
+    a = len(b)
+    c = deop1(b[0:a//3])+deop2(b[a//3:2*a//3])+deop3(b[2*a//3:])
+    return derecur(c[0:a//3])+derecur(c[a//3:2*a//3])+ derecur(c[2*a//3:])
+
+
+a = bytearray()
+a.extend(b"\x8c\x86\xb1\x90\x86\xc9=\xbe\x9b\x80\x87\xca\x86\x8dKJ\xc4e?\xbc\xdbC\xbe!Y \xaf")
+
+res = derecur(a)
+print(res)
+
+#if res == b'\x8c\x86\xb1\x90\x86\xc9=\xbe\x9b\x80\x87\xca\x86\x8dKJ\xc4e?\xbc\xdbC\xbe!Y \xaf':
+#    print("correct")
+#else:
+#    print("oopsies")
